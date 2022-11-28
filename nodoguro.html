@@ -1,0 +1,40 @@
+<!DOCTYPE html><html><head>
+<title>のどぐろ原始焼き - ろ組 福井駅前店</title>
+<script src="https://code4fukui.github.io/aframe/dist/aframe-master.min.js"></script>
+<!--
+  <script src="https://rawgit.com/fernandojsg/aframe-teleport-controls/master/dist/aframe-teleport-controls.min.js"></script>
+-->
+<!--
+  <script type="module" src="./drone-controls-mode2.js"></script>
+-->
+<script type="module" src="https://code4fukui.github.io/glb-viewer/mc-controls.js"></script>
+
+</head>
+
+<body>
+<a-scene id="scene" background="color: #4080e0" renderer="colorManagement: true">
+  <a-assets timeout="10000">
+    <a-asset-item id="n1" src="./nodoguro-lidar.glb"></a-asset-item>
+    <a-asset-item id="n2" src="./nodoguro-photogra.glb"></a-asset-item>
+  </a-assets>
+  <a-text position="-0.2 1.7 -.3" value="LiDAR" color="black" width=1 depth=0 anchor=left></a-text>
+  <a-entity gltf-model="#n1" position="-.2 1.6 -.3" scale="1 1 1" rotation="0 0 0"></a-entity>
+
+  <a-text position="0.03 1.7 -.3" value="Photogrammetry" color="black" width=1 depth=0 anchor=left></a-text>
+  <a-entity gltf-model="#n2" position=".2 1.6 -.3" scale="1 1 1" rotation="0 0 0"></a-entity>
+
+  <a-entity light="type: ambient; color: #FFF"></a-entity>
+    <!-- <a-sphere id="sphere" color="#f22"></a-sphere> -->
+  <a-entity id="cameraRig" position="0 0 0" rotation="0 0 0">
+    <a-entity id="head" camera position="0 1.7 0"mc-controls look-controls x-drone-controls-mode2></a-entity>
+    <a-entity oculus-touch-controls="hand:left" teleport-controls="button:trigger; collisionEntities:.collidable; cameraRig:#cameraRig; teleportOrigin:#head;"></a-entity>
+    <a-entity oculus-touch-controls="hand:right" teleport-controls="button:trigger; collisionEntities:.collidable; cameraRig:#cameraRig; teleportOrigin:#head;"></a-entity>
+    <!--
+    <a-entity id="leftHand" hand-tracking-controls="hand: left;"></a-entity>
+    <a-entity id="rightHand" hand-tracking-controls="hand: right;"></a-entity>
+    -->
+    </a-entity>
+</a-scene>
+  
+</body>
+</html>
