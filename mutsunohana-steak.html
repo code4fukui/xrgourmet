@@ -1,0 +1,94 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width"><link rel="icon" href="data:">
+<title>XRステーキ むつのはな</title>
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://code4fukui.github.io/three.js/build/three.module.js",
+    "three/addons/": "https://code4fukui.github.io/three.js/examples/jsm/"
+  }
+}
+</script>
+<style>
+body {
+	background-color: black !important;
+}
+header {
+	background-color: rgba(255, 255, 255, .8) !important;
+}
+</style>
+</head>
+<body>
+
+<header>
+	<h1>XRステーキ むつのはな</h1>
+	DATA: ステーキ by <a href=https://ricka-yukinohana.com/>むつのはな</a><br>
+	LIB: <a href="https://github.com/code4fukui/egxr.js/">egxr.js</a><br>
+	APP: <a href="https://github.com/code4fukui/xrgourmet/">data and src on GitHub</a><br>
+</header>
+
+<script type="module">
+import { THREE, scene, camera, renderer, ctrls } from "https://code4fukui.github.io/egxr.js/egxr.js";
+import { CSV } from "https://js.sabae.cc/CSV.js";
+import { PromiseGLTFLoader } from "https://code4fukui.github.io/vr-tojinbo/PromiseGLTFLoader.js";
+
+export const isNear = (o1, o2, distance = 0.1) => {
+  const p1 = o1.position;
+	const p2 = o2.position;
+	const dx = p1.x - p2.x;
+  const dy = p1.y - p2.y;
+  const dz = p1.z - p2.z;
+  const d = dx * dx + dy * dy + dz * dz;
+  return d < distance * distance;
+};
+
+const url = "./mutsunohana-steak.glb";
+const glb = await new PromiseGLTFLoader().promiseLoad(url);
+const mesh = glb.scene.clone();
+mesh.position.y = -0.1;
+mesh.position.z = -.3;
+scene.add(mesh);
+
+const ambientLight = new THREE.AmbientLight(0xffffff);
+scene.add(ambientLight);
+
+const t0 = performance.now();
+let state = 0;
+let pick = null;
+let dp = null;
+renderer.setAnimationLoop(() => {
+	try {
+	const t = t0 - performance.now();
+	
+	if (state == 0) {
+		for (const ctrl of ctrls) {
+			if (ctrl.selected && isNear(ctrl, mesh, 0.3)) {
+				pick = ctrl;
+				state = 1;
+				dp = {
+					x: mesh.position.x - pick.position.x,
+					y: mesh.position.y - pick.position.y,
+					z: mesh.position.z - pick.position.z,
+				};
+				break;
+			}
+		}
+	} else if (state == 1) {
+		if (!pick.selected) {
+			pick = null;
+			state = 0;
+		} else {
+			mesh.position.x = pick.position.x + dp.x;
+			mesh.position.y = pick.position.y + dp.y;
+			mesh.position.z = pick.position.z + dp.z;
+		}
+	}
+	
+	mesh.rotation.y = t / 20000;
+	renderer.render(scene, camera);
+	} catch (e) {
+		alert(e);
+	}
+});
+</script>
+</body>
+</html>
